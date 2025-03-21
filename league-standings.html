@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turnīra tabula - Latvijas Beisbola Līga</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="league-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+        }
+        main {
+            flex: 1;
+        }
+        footer {
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">
+                    <img src="logo.jpg" alt="LBSS Logo">
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Sākumlapa</a>
+                <a href="league-standings.html">Latvijas Beisbola Līga</a>
+                <a href="index.html#youth">Bērnu un Jauniešu Līga</a>
+                <a href="where-to-play.html">Kur spēlēt?</a>
+                <a href="index.html#documents">Dokumenti</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="page-header">
+        <div class="container">
+            <h1>Turnīra tabula</h1>
+            <p>2024. gada sezona</p>
+        </div>
+    </header>
+
+    <main>
+        <section class="league-nav">
+            <div class="container">
+                <div class="league-nav-links">
+                    <a href="league-standings.html" class="league-nav-item active">
+                        <i class="fas fa-trophy"></i>
+                        <span>Turnīra tabula</span>
+                    </a>
+                    <a href="league-schedule.html" class="league-nav-item">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Spēļu kalendārs</span>
+                    </a>
+                    <a href="league-stats.html" class="league-nav-item">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Statistika</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section class="standings-section">
+            <div class="container">
+                <div class="standings-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Vieta</th>
+                                <th class="team-name">Komanda</th>
+                                <th>Spēles</th>
+                                <th>Uzvaras</th>
+                                <th>Zaudējumi</th>
+                                <th>Procenti</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Standings will be loaded dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Kontakti</h3>
+                    <p><i class="fas fa-envelope"></i> info@beisbolasavieniba.lv</p>
+                    <p><i class="fas fa-phone"></i> +371 XXXXXXXX</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Ātrās Saites</h3>
+                    <a href="league-standings.html"><i class="fas fa-trophy"></i> Turnīra tabula</a>
+                    <a href="league-schedule.html"><i class="fas fa-calendar-alt"></i> Spēļu kalendārs</a>
+                    <a href="league-stats.html"><i class="fas fa-chart-bar"></i> Statistika</a>
+                </div>
+                <div class="footer-section">
+                    <h3>Par Mums</h3>
+                    <a href="index.html#documents">Dokumenti</a>
+                    <a href="index.html#contacts">Kontakti</a>
+                    <a href="index.html#about">Par LBSS</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 LBSS. Visas tiesības aizsargātas</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="league-standings.js"></script>
+</body>
+</html> 

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - LBSS</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="league-styles.css">
+    <link rel="stylesheet" href="admin-styles.css">
+    <link rel="stylesheet" href="game-stats.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        main {
+            flex: 1;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">
+                    <img src="logo.jpg" alt="LBSS Logo">
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Sākumlapa</a>
+                <a href="league.html">Latvijas Beisbola Līga</a>
+                <a href="admin.html" class="active">Admin Panel</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="page-header">
+        <div class="container">
+            <h1>Admin Panel</h1>
+            <p>Spēļu pārvaldība</p>
+        </div>
+    </header>
+
+    <main>
+        <section class="admin-section">
+            <div class="container">
+                <div class="admin-tabs">
+                    <button class="tab-btn active" onclick="showTab('add-game')">
+                        <i class="fas fa-plus"></i> Pievienot spēli
+                    </button>
+                    <button class="tab-btn" onclick="showTab('manage-games')">
+                        <i class="fas fa-edit"></i> Pārvaldīt spēles
+                    </button>
+                    <button class="tab-btn" onclick="showTab('manage-players')">
+                        <i class="fas fa-users"></i> Pārvaldīt spēlētājus
+                    </button>
+                </div>
+
+                <div id="add-game" class="tab-content active">
+                    <form id="add-game-form" class="admin-form">
+                        <div class="form-group">
+                            <label>Posms</label>
+                            <select name="stage" required>
+                                <option value="I">I POSMS</option>
+                                <option value="II">II POSMS</option>
+                                <option value="III">III POSMS</option>
+                                <option value="IV">IV POSMS</option>
+                                <option value="V">V POSMS</option>
+                            </select>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Datums</label>
+                                <input type="date" name="date" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Laiks</label>
+                                <input type="time" name="time" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Mājas komanda</label>
+                                <select name="home-team" required>
+                                    <option value="ARCHERS">Archers</option>
+                                    <option value="SIGULDA">Sigulda</option>
+                                    <option value="PLATONE">Platone</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Viesu komanda</label>
+                                <select name="away-team" required>
+                                    <option value="ARCHERS">Archers</option>
+                                    <option value="SIGULDA">Sigulda</option>
+                                    <option value="PLATONE">Platone</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Norises vieta</label>
+                            <select name="location" required>
+                                <option value="LU Beisbola laukums">LU Beisbola laukums</option>
+                                <option value="Beisbola laukums &quot;Lielvircava&quot;">Beisbola laukums "Lielvircava"</option>
+                                <option value="Beisbola laukums &quot;Turaidas skola&quot;">Beisbola laukums "Turaidas skola"</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group game-status">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="is-completed" onchange="toggleScoreInputs(this)">
+                                Spēle ir pabeigta (atzīmēt, lai pievienotu rezultātu)
+                            </label>
+                        </div>
+
+                        <div class="form-row score-inputs" style="display: none;">
+                            <div class="form-group">
+                                <label>Mājas komandas punkti</label>
+                                <input type="number" name="home-score" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label>Viesu komandas punkti</label>
+                                <input type="number" name="away-score" min="0">
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Saglabāt
+                            </button>
+                            <button type="reset" class="btn btn-secondary">
+                                <i class="fas fa-undo"></i> Atcelt
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="manage-games" class="tab-content">
+                    <div class="games-list">
+                        <!-- Games will be loaded here dynamically -->
+                    </div>
+                </div>
+
+                <div id="manage-players" class="tab-content">
+                    <div class="team-selection">
+                        <label>Izvēlēties komandu</label>
+                        <select id="team-select">
+                            <option value="ARCHERS">Archers</option>
+                            <option value="SIGULDA">Sigulda</option>
+                            <option value="PLATONE">Platone</option>
+                        </select>
+                    </div>
+
+                    <form id="add-player-form" class="admin-form">
+                        <h3>Pievienot spēlētāju</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Vārds</label>
+                                <input type="text" name="firstName" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Uzvārds</label>
+                                <input type="text" name="lastName" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Numurs</label>
+                                <input type="number" name="number" min="0" max="99" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Sit</label>
+                                <select name="bats" required>
+                                    <option value="R">Ar labo</option>
+                                    <option value="L">Ar kreiso</option>
+                                    <option value="S">Abpusēji</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Met</label>
+                                <select name="throws" required>
+                                    <option value="R">Ar labo</option>
+                                    <option value="L">Ar kreiso</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Pievienot spēlētāju
+                            </button>
+                            <button type="reset" class="btn btn-secondary">
+                                <i class="fas fa-undo"></i> Atcelt
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Kontakti</h3>
+                    <p><i class="fas fa-envelope"></i> info@beisbolasavieniba.lv</p>
+                    <p><i class="fas fa-phone"></i> +371 XXXXXXXX</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 LBSS. Visas tiesības aizsargātas</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Game Statistics Modal -->
+    <div id="game-stats-modal" class="modal">
+        <div class="modal-content stats-modal">
+            <span class="close">&times;</span>
+            <h2>Ievadīt spēles statistiku</h2>
+            
+            <div class="game-info"></div>
+
+            <div class="team-selector">
+                <button class="team-btn active">Home Team</button>
+                <button class="team-btn">Away Team</button>
+            </div>
+
+            <div class="stats-section batting-section">
+                <h3>Sitēji</h3>
+                <button class="btn btn-primary add-player-btn">
+                    <i class="fas fa-plus"></i> Pievienot spēlētāju
+                </button>
+                <div class="stats-grid">
+                    <table class="batting-table stats-table">
+                        <thead>
+                            <tr>
+                                <th>Spēlētājs</th>
+                                <th>AB</th>
+                                <th>H</th>
+                                <th>2B</th>
+                                <th>3B</th>
+                                <th>HR</th>
+                                <th>RBI</th>
+                                <th>R</th>
+                                <th>BB</th>
+                                <th>SO</th>
+                                <th>HBP</th>
+                                <th>SF</th>
+                                <th>SAC</th>
+                                <th>SB</th>
+                                <th>CS</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Batting rows will be added here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="stats-section pitching-section">
+                <h3>Metēji</h3>
+                <button class="btn btn-primary add-player-btn">
+                    <i class="fas fa-plus"></i> Pievienot spēlētāju
+                </button>
+                <div class="stats-grid">
+                    <table class="stats-table pitching-table">
+                        <thead>
+                            <tr>
+                                <th>Metējs</th>
+                                <th>IP</th>
+                                <th>H</th>
+                                <th>R</th>
+                                <th>ER</th>
+                                <th>BB</th>
+                                <th>SO</th>
+                                <th>HR</th>
+                                <th>BF</th>
+                                <th>HBP</th>
+                                <th>WP</th>
+                                <th>BK</th>
+                                <th>W</th>
+                                <th>L</th>
+                                <th>SV</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="saveGameStats()">
+                    Saglabāt statistiku
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+    <script src="game-stats.js"></script>
+</body>
+</html> 
