@@ -391,4 +391,92 @@ function addTestPlayer() {
     players.push(testPlayer);
     localStorage.setItem(`players_${teamId}`, JSON.stringify(players));
     console.log(`Added test player to team ${teamId}:`, testPlayer);
+}
+
+// Export data
+function exportData() {
+    try {
+        // Collect all localStorage data
+        const data = {};
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            data[key] = JSON.parse(localStorage.getItem(key));
+        }
+        
+        // Convert to JSON string
+        const jsonData = JSON.stringify(data, null, 2);
+        
+        // Create a blob and download link
+        const blob = new Blob([jsonData], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        // Create download link
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'lbss-data-' + new Date().toISOString().slice(0, 10) + '.json';
+        document.body.appendChild(a);
+        a.click();
+        
+        // Clean up
+        setTimeout(() => {
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }, 0);
+        
+        showSuccessMessage('Dati veiksmīgi eksportēti!');
+    } catch (error) {
+        console.error('Error exporting data:', error);
+        alert('Kļūda eksportējot datus. Lūdzu, mēģiniet vēlreiz.');
+    }
+}
+
+// Import data
+function importData() {
+    try {
+        // Create file input
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        
+        input.onchange = e => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = event => {
+                try {
+                    const data = JSON.parse(event.target.result);
+                    
+                    // Update localStorage with imported data
+                    Object.keys(data).forEach(key => {
+                        localStorage.setItem(key, JSON.stringify(data[key]));
+                    });
+                    
+                    // Reload current tab
+                    const activeTab = document.querySelector('.tab-btn.active');
+                    if (activeTab) {
+                        const tabId = activeTab.getAttribute('onclick').match(/'([^']+)'/)[1];
+                        showTab(tabId);
+                    }
+                    
+                    showSuccessMessage('Dati veiksmīgi importēti!');
+                } catch (err) {
+                    console.error('Error parsing imported data:', err);
+                    alert('Kļūda importējot datus. Pārbaudiet faila formātu.');
+                }
+            };
+            
+            reader.readAsText(file);
+        };
+        
+        document.body.appendChild(input);
+        input.click();
+        
+        // Clean up
+        setTimeout(() => {
+            document.body.removeChild(input);
+        }, 0);
+    } catch (error) {
+        console.error('Error importing data:', error);
+        alert('Kļūda importējot datus. Lūdzu, mēģiniet vēlreiz.');
+    }
 } 

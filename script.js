@@ -123,4 +123,62 @@ document.addEventListener('DOMContentLoaded', function() {
             this.parentElement.classList.add('loaded');
         });
     });
-}); 
+    
+    // Check for data
+    checkDataExists();
+});
+
+// Check if data exists in localStorage
+function checkDataExists() {
+    // Only run this check if we're not on the admin page
+    if (window.location.href.includes('admin.html')) {
+        return;
+    }
+    
+    const games = JSON.parse(localStorage.getItem('games') || '[]');
+    
+    // If no games data exists, show a warning banner
+    if (games.length === 0) {
+        const warningBanner = document.createElement('div');
+        warningBanner.className = 'data-warning';
+        warningBanner.innerHTML = `
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>Nav ielādēti dati. Lūdzu, izmantojiet <a href="admin.html">administrācijas paneli</a> lai importētu datus no JSON faila.</span>
+            <button class="close-warning" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
+        `;
+        document.body.insertBefore(warningBanner, document.body.firstChild);
+        
+        // Add styles for the warning banner
+        const style = document.createElement('style');
+        style.textContent = `
+            .data-warning {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 10px 20px;
+                background-color: #fff3cd;
+                color: #856404;
+                border-bottom: 1px solid #ffeeba;
+                position: relative;
+                z-index: 1000;
+            }
+            .data-warning i {
+                font-size: 18px;
+                color: #ffc107;
+            }
+            .data-warning a {
+                color: #0056b3;
+                text-decoration: underline;
+            }
+            .close-warning {
+                background: none;
+                border: none;
+                cursor: pointer;
+                margin-left: auto;
+                color: #856404;
+                font-size: 16px;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+} 

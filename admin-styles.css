@@ -732,4 +732,73 @@ select:invalid:focus {
     font-size: 2rem;
     color: var(--light-gray);
     margin-bottom: 1rem;
+}
+
+/* Add styles for the data management section */
+.data-management {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin: 16px 0;
+    padding: 16px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.data-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background-color: #3E517A;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.data-btn:hover {
+    background-color: #2C3C5A;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.data-btn i {
+    font-size: 16px;
+}
+
+/* Help section styles */
+.data-help {
+    margin: 16px 0 24px;
+    padding: 16px;
+    background-color: #fff8e1;
+    border-left: 4px solid #ffc107;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.data-help h3 {
+    margin-top: 0;
+    color: #795548;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.data-help i {
+    color: #ffc107;
+}
+
+.data-help ol {
+    margin-left: 20px;
+    padding-left: 0;
+}
+
+.data-help li {
+    margin-bottom: 8px;
 } 
