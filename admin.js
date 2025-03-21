@@ -479,4 +479,234 @@ function importData() {
         console.error('Error importing data:', error);
         alert('Kļūda importējot datus. Lūdzu, mēģiniet vēlreiz.');
     }
-} 
+}
+
+// Function to load team players in the admin panel
+function loadTeamPlayers(teamId) {
+    console.log('Loading players for team:', teamId);
+    
+    try {
+        // Get players from localStorage
+        const players = JSON.parse(localStorage.getItem(`players_${teamId}`) || '[]');
+        console.log(`Found ${players.length} players for team ${teamId}:`, players);
+        
+        // Get container for player list
+        const playersContainer = document.querySelector('#manage-players .players-list');
+        if (!playersContainer) {
+            console.error('Players list container not found');
+            return;
+        }
+        
+        // Clear existing content
+        playersContainer.innerHTML = '';
+        
+        // If no players, show a message
+        if (players.length === 0) {
+            playersContainer.innerHTML = `
+                <div class="no-players">
+                    <i class="fas fa-info-circle"></i>
+                    <p>Nav pievienotu spēlētāju šai komandai</p>
+                </div>
+            `;
+            return;
+        }
+        
+        // Create table to display players
+        const playersTable = document.createElement('table');
+        playersTable.className = 'players-table';
+        
+        // Add table header
+        playersTable.innerHTML = `
+            <thead>
+                <tr>
+                    <th>Numurs</th>
+                    <th>Vārds</th>
+                    <th>Uzvārds</th>
+                    <th>Sit</th>
+                    <th>Met</th>
+                    <th>Darbības</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        `;
+        
+        // Sort players by number
+        players.sort((a, b) => a.number - b.number);
+        
+        // Add players to table
+        const tbody = playersTable.querySelector('tbody');
+        players.forEach(player => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${player.number}</td>
+                <td>${player.firstName}</td>
+                <td>${player.lastName}</td>
+                <td>${getBattingHand(player.bats)}</td>
+                <td>${getThrowingHand(player.throws)}</td>
+                <td>
+                    <button class="action-btn" title="Rediģēt" onclick="editPlayer('${player.id}')">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="action-btn" title="Dzēst" onclick="deletePlayer('${player.id}')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+        
+        // Add table to container
+        playersContainer.appendChild(playersTable);
+    } catch (error) {
+        console.error('Error loading players:', error);
+    }
+}
+
+// Helper function to get full batting hand text
+function getBattingHand(code) {
+    switch(code) {
+        case 'R': return 'Ar labo';
+        case 'L': return 'Ar kreiso';
+        case 'S': return 'Abpusēji';
+        default: return code;
+    }
+}
+
+// Helper function to get full throwing hand text
+function getThrowingHand(code) {
+    switch(code) {
+        case 'R': return 'Ar labo';
+        case 'L': return 'Ar kreiso';
+        default: return code;
+    }
+}
+
+// Function to delete a player
+function deletePlayer(playerId) {
+    if (!confirm('Vai tiešām vēlaties dzēst šo spēlētāju?')) return;
+    
+    try {
+        const teamId = document.getElementById('team-select').value;
+        const players = JSON.parse(localStorage.getItem(`players_${teamId}`) || '[]');
+        const updatedPlayers = players.filter(player => player.id !== playerId);
+        
+        localStorage.setItem(`players_${teamId}`, JSON.stringify(updatedPlayers));
+        
+        // Reload player list
+        loadTeamPlayers(teamId);
+        
+        showSuccessMessage('Spēlētājs veiksmīgi dzēsts!');
+    } catch (error) {
+        console.error('Error deleting player:', error);
+        alert('Kļūda dzēšot spēlētāju. Lūdzu, mēģiniet vēlreiz.');
+    }
+}
+
+// Function to edit a player
+function editPlayer(playerId) {
+    try {
+        const teamId = document.getElementById('team-select').value;
+        const players = JSON.parse(localStorage.getItem(`players_${teamId}`) || '[]');
+        const player = players.find(p => p.id === playerId);
+        
+        if (!player) return;
+        
+        // Fill form with player data
+        const form = document.getElementById('add-player-form');
+        form.querySelector('[name="firstName"]').value = player.firstName;
+        form.querySelector('[name="lastName"]').value = player.lastName;
+        form.querySelector('[name="number"]').value = player.number;
+        form.querySelector('[name="bats"]').value = player.bats;
+        form.querySelector('[name="throws"]').value = player.throws;
+        
+        // Set form for edit mode
+        form.dataset.editId = playerId;
+        form.dataset.teamId = teamId;
+        
+        // Change button text
+        form.querySelector('button[type="submit"]').innerHTML = '<i class="fas fa-save"></i> Saglabāt izmaiņas';
+        
+        // Scroll to form
+        form.scrollIntoView({ behavior: 'smooth' });
+    } catch (error) {
+        console.error('Error editing player:', error);
+    }
+}
+
+// Add event listener for player form reset
+document.getElementById('add-player-form').querySelector('button[type="reset"]').addEventListener('click', function() {
+    const form = document.getElementById('add-player-form');
+    delete form.dataset.editId;
+    delete form.dataset.teamId;
+    form.querySelector('button[type="submit"]').innerHTML = '<i class="fas fa-save"></i> Pievienot spēlētāju';
+});
+
+// Update player form submission to handle edits
+document.getElementById('add-player-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const teamId = document.getElementById('team-select').value;
+    const editId = this.dataset.editId;
+    
+    if (!teamId) {
+        alert('Lūdzu izvēlieties komandu!');
+        return;
+    }
+    
+    const formData = new FormData(this);
+    
+    const player = {
+        id: editId || String(Date.now()),
+        firstName: formData.get('firstName'),
+        lastName: formData.get('lastName'),
+        number: Number(formData.get('number')),
+        bats: formData.get('bats'),
+        throws: formData.get('throws')
+    };
+    
+    try {
+        const storageKey = `players_${teamId}`;
+        const players = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        
+        if (editId) {
+            // Update existing player
+            const index = players.findIndex(p => p.id === editId);
+            if (index !== -1) {
+                // Check if number is already taken by another player (except the one being edited)
+                const numberExists = players.some(p => p.number === player.number && p.id !== editId);
+                if (numberExists) {
+                    alert('Šis numurs jau ir piešķirts citam spēlētājam!');
+                    return;
+                }
+                
+                players[index] = player;
+                showSuccessMessage('Spēlētājs veiksmīgi atjaunināts!');
+            }
+            
+            // Reset form edit mode
+            delete this.dataset.editId;
+            this.querySelector('button[type="submit"]').innerHTML = '<i class="fas fa-save"></i> Pievienot spēlētāju';
+        } else {
+            // Add new player
+            // Check if number is already taken
+            const numberExists = players.some(p => p.number === player.number);
+            if (numberExists) {
+                alert('Šis numurs jau ir piešķirts citam spēlētājam!');
+                return;
+            }
+            
+            players.push(player);
+            showSuccessMessage('Spēlētājs veiksmīgi pievienots!');
+        }
+        
+        localStorage.setItem(storageKey, JSON.stringify(players));
+        this.reset();
+        
+        // Reload player list
+        loadTeamPlayers(teamId);
+        
+    } catch (error) {
+        console.error('Error saving player:', error);
+        alert('Kļūda saglabājot spēlētāju. Lūdzu, mēģiniet vēlreiz.');
+    }
+}); 
