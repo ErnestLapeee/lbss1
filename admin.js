@@ -583,19 +583,33 @@ function getThrowingHand(code) {
 
 // Function to delete a player
 function deletePlayer(playerId) {
-    if (!confirm('Vai tiešām vēlaties dzēst šo spēlētāju?')) return;
-    
     try {
         const teamId = document.getElementById('team-select').value;
         const players = JSON.parse(localStorage.getItem(`players_${teamId}`) || '[]');
-        const updatedPlayers = players.filter(player => player.id !== playerId);
         
+        // Find the player to delete
+        const playerToDelete = players.find(player => player.id === playerId);
+        if (!playerToDelete) {
+            console.error('Player not found:', playerId);
+            return;
+        }
+        
+        // Get player name for confirmation
+        const playerName = `${playerToDelete.firstName} ${playerToDelete.lastName} (#${playerToDelete.number})`;
+        
+        // Confirm deletion
+        if (!confirm(`Vai tiešām vēlaties dzēst spēlētāju ${playerName}?`)) {
+            return;
+        }
+        
+        // Delete player
+        const updatedPlayers = players.filter(player => player.id !== playerId);
         localStorage.setItem(`players_${teamId}`, JSON.stringify(updatedPlayers));
         
         // Reload player list
         loadTeamPlayers(teamId);
         
-        showSuccessMessage('Spēlētājs veiksmīgi dzēsts!');
+        showSuccessMessage(`Spēlētājs ${playerName} veiksmīgi dzēsts!`);
     } catch (error) {
         console.error('Error deleting player:', error);
         alert('Kļūda dzēšot spēlētāju. Lūdzu, mēģiniet vēlreiz.');
@@ -653,6 +667,10 @@ document.getElementById('add-player-form').addEventListener('submit', function(e
         return;
     }
     
+    // Get friendly team name for messages
+    const teamSelect = document.getElementById('team-select');
+    const teamName = teamSelect.options[teamSelect.selectedIndex].text;
+    
     const formData = new FormData(this);
     
     const player = {
@@ -672,10 +690,10 @@ document.getElementById('add-player-form').addEventListener('submit', function(e
             // Update existing player
             const index = players.findIndex(p => p.id === editId);
             if (index !== -1) {
-                // Check if number is already taken by another player (except the one being edited)
+                // Check if number is already taken by another player on THE SAME TEAM (except the one being edited)
                 const numberExists = players.some(p => p.number === player.number && p.id !== editId);
                 if (numberExists) {
-                    alert('Šis numurs jau ir piešķirts citam spēlētājam!');
+                    alert(`Numurs ${player.number} jau ir piešķirts citam spēlētājam komandā "${teamName}"`);
                     return;
                 }
                 
@@ -688,10 +706,10 @@ document.getElementById('add-player-form').addEventListener('submit', function(e
             this.querySelector('button[type="submit"]').innerHTML = '<i class="fas fa-save"></i> Pievienot spēlētāju';
         } else {
             // Add new player
-            // Check if number is already taken
+            // Check if number is already taken on THE SAME TEAM
             const numberExists = players.some(p => p.number === player.number);
             if (numberExists) {
-                alert('Šis numurs jau ir piešķirts citam spēlētājam!');
+                alert(`Numurs ${player.number} jau ir piešķirts citam spēlētājam komandā "${teamName}"`);
                 return;
             }
             
